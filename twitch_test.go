@@ -37,6 +37,7 @@ func TestDownloadClip(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
+	config.ClientID = os.Getenv("clientId")
 	os.Remove("clips")
 	os.Exit(m.Run())
 }
