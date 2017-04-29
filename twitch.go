@@ -1,14 +1,16 @@
 package main
 
 import (
-	"gopkg.in/resty.v0"
+	"bytes"
 	"encoding/json"
-	"time"
-	"os"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"strings"
-	"bytes"
+	"time"
+
+	"gopkg.in/resty.v0"
 )
 
 // TwitchError represents an error string
@@ -27,81 +29,91 @@ type Broadcaster struct {
 	Logo        string `json:"logo"`
 }
 
+// Thumbnails represents clips thumbnails
+type Thumbnails struct {
+	Medium string `json:"medium"`
+	Small  string `json:"small"`
+	Tiny   string `json:"tiny"`
+}
+
 // Clip represents a clip (short video) on twitch
 type Clip struct {
-	Slug string `json:"slug"`
-	TrackingID string `json:"tracking_id"`
-	URL string `json:"url"`
-	EmbedURL string `json:"embed_url"`
-	EmbedHTML string `json:"embed_html"`
+	Slug        string      `json:"slug"`
+	TrackingID  string      `json:"tracking_id"`
+	URL         string      `json:"url"`
+	EmbedURL    string      `json:"embed_url"`
+	EmbedHTML   string      `json:"embed_html"`
 	Broadcaster Broadcaster `json:"broadcaster"`
-	Curator Broadcaster `json:"curator"`
-	Vod struct {
-		ID string `json:"id"`
+	Curator     Broadcaster `json:"curator"`
+	Vod         struct {
+		ID  string `json:"id"`
 		URL string `json:"url"`
 	} `json:"vod"`
-	Game string `json:"game"`
-	Language string `json:"language"`
-	Title string `json:"title"`
-	Views int `json:"views"`
-	Duration float64 `json:"duration"`
-	CreatedAt time.Time `json:"created_at"`
-	Thumbnails struct {
-		Medium string `json:"medium"`
-		Small string `json:"small"`
-		Tiny string `json:"tiny"`
-	} `json:"thumbnails"`
+	Game       string     `json:"game"`
+	Language   string     `json:"language"`
+	Title      string     `json:"title"`
+	Views      int        `json:"views"`
+	Duration   float64    `json:"duration"`
+	CreatedAt  time.Time  `json:"created_at"`
+	Thumbnails Thumbnails `json:"thumbnails"`
 }
 
 // Clips represents multiple clips
 type Clips struct {
-	Clips []Clip`json:"clips"`
+	Clips  []Clip `json:"clips"`
 	Cursor string `json:"_cursor"`
 }
 
 var url = "https://api.twitch.tv/kraken/clips/top"
-var clientID = "da2bjk7gdn4zt04ssoq0e7zixvaa3f";
 
 // GetTopClips gets multiple clips from a twitch channel
-func (clips *Clips) GetTopClips(channel string, limit string, period string) error {
+func (clips *Clips) GetTopClips(channel string, limit string, period string) {
+	log.Printf("Getting the top %s clips for %s during the last %s", limit, channel, period)
 	resp, err := resty.R().
 		SetQueryParams(map[string]string{
 			"channel": channel,
 			"limit":   limit,
 			"period":  period}).
-		SetHeader("Client-ID", clientID).
+		SetHeader("Client-ID", config.ClientID).
 		SetHeader("Accept", "application/vnd.twitchtv.v5+json").
 		Get(url)
 	if err != nil {
-		return nil
+		log.Fatal(err)
 	}
-	json.Unmarshal(resp.Body(), clips)
-	return nil
+	err = json.Unmarshal(resp.Body(), clips)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // DownloadClip downloads the clip from Twitch
-func (clip *Clip) DownloadClip(dir string) error {
+func (clip *Clip) DownloadClip(path string) {
 	videoURL := clip.Thumbnails.Medium
 	videoURL = strings.Replace(videoURL, "-preview-480x272.jpg", ".mp4", -1)
 
-	outString := dir + "/" + clip.Slug + ".mp4"
+	outString := path + "/" + clip.Slug + ".mp4"
 
-	os.Mkdir(dir, 0777)
-	
-	out, err := os.Create(outString)
-	if err != nil {
-		return err
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err := os.Mkdir(path, 0777)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
-	defer out.Close()
 
+	out, err := os.Create(outString)
+	defer out.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Downloading %s...\n", clip.Slug)
 	resp, err := resty.R().
 		Get(videoURL)
-		
+
 	r := bytes.NewReader(resp.Body())
-	
+
 	io.Copy(out, r)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
 }

@@ -1,22 +1,12 @@
 package main
 
-import (
-	"fmt"
-)
+var config = LoadConfig()
 
 func main() {
 	clips := Clips{}
 
-	err := clips.GetTopClips("itmejp", "10", "week")
-	if err != nil {
-		fmt.Println(err)
-	}
+	clips.GetTopClips(config.Channel, config.Limit, config.Period)
 	for _, clip := range clips.Clips {
-		err = clip.DownloadClip("clips")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Printf("Clip:\n\tslug: %s\n\turl: %s\n\tauthor: %s\n", clip.Slug, clip.EmbedURL, clip.Curator.Name)
+		clip.DownloadClip(config.Path)
 	}
 }
