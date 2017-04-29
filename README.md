@@ -1,4 +1,4 @@
-# stitchclips
+# stitchclips [![Build Status](https://travis-ci.com/Sadzeih/stitchclips.svg?token=yuJvgH2HnePzuxC8VB7p&branch=master)](https://travis-ci.com/Sadzeih/stitchclips)
 
 This tool stiches your clips from Twitch automatically and post them to Youtube or Twitch Videos
 
