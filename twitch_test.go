@@ -30,8 +30,8 @@ func TestDownloadClip(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
-	testClip.DownloadClip("clips")
-	if _, err := os.Stat("clips/" + testClip.Slug + ".mp4"); os.IsNotExist(err) {
+	testClip.DownloadClip("clips_test")
+	if _, err := os.Stat("clips_test/" + testClip.Slug + ".mp4"); os.IsNotExist(err) {
 		t.Error("DownloadFile: File not downloaded")
 	}
 }
@@ -40,6 +40,6 @@ func TestMain(m *testing.M) {
 	if config.ClientID == "" {
 		config.ClientID = os.Getenv("clientId")
 	}
-	os.Remove("clips")
+	os.Remove("clips_test")
 	os.Exit(m.Run())
 }

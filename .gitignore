@@ -24,6 +24,9 @@ _testmain.go
 *.prof
 
 clips/
+clips_test/
 config/*.json
 !config/test.json
 stitchclips
+stitched.mp4
+stitching

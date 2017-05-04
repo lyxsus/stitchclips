@@ -9,4 +9,5 @@ func main() {
 	for _, clip := range clips.Clips {
 		clip.DownloadClip(config.Path)
 	}
+	clips.StitchClips(config.Path)
 }
