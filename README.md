@@ -13,6 +13,10 @@ This tool stiches your clips from Twitch automatically and post them to Youtube 
 
 ## Installation
 
+### Required packages
+
+* ffmpeg
+
 First download dependencies and build the project
 
 ```bash
