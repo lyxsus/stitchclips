@@ -12,12 +12,12 @@ var testClip = Clip{
 	},
 }
 
-func TestGetTopClips(t *testing.T) {
+func TestGetTop(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 	clips := Clips{}
-	clips.GetTopClips("itmejp", "2", "all")
+	clips.GetTop("itmejp", "2", "all")
 	if len(clips.Clips) != 2 {
 		t.Error("GetTopClips: did not get clips")
 	}
@@ -26,11 +26,11 @@ func TestGetTopClips(t *testing.T) {
 	}
 }
 
-func TestDownloadClip(t *testing.T) {
+func TestDownload(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
-	testClip.DownloadClip("clips_test")
+	testClip.Download()
 	if _, err := os.Stat("clips_test/" + testClip.Slug + ".mp4"); os.IsNotExist(err) {
 		t.Error("DownloadFile: File not downloaded")
 	}

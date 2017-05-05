@@ -3,5 +3,6 @@
 	"channel": "itmejp",
 	"period": "week",
 	"limit": "10",
-	"path": "clips"
+	"path": "clips",
+	"output": "videoname"
 }

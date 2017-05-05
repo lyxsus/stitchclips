@@ -66,8 +66,8 @@ type Clips struct {
 
 var url = "https://api.twitch.tv/kraken/clips/top"
 
-// GetTopClips gets multiple clips from a twitch channel
-func (clips *Clips) GetTopClips(channel string, limit string, period string) {
+// GetTop gets multiple clips from a twitch channel
+func (clips *Clips) GetTop(channel string, limit string, period string) {
 	log.Printf("Getting the top %s clips for %s during the last %s", limit, channel, period)
 	resp, err := resty.R().
 		SetQueryParams(map[string]string{
@@ -86,15 +86,15 @@ func (clips *Clips) GetTopClips(channel string, limit string, period string) {
 	}
 }
 
-// DownloadClip downloads the clip from Twitch
-func (clip *Clip) DownloadClip(path string) {
+// Download downloads the clip from Twitch
+func (clip *Clip) Download() {
 	videoURL := clip.Thumbnails.Medium
 	videoURL = strings.Replace(videoURL, "-preview-480x272.jpg", ".mp4", -1)
 
-	outString := path + "/" + clip.Slug + ".mp4"
+	outString := config.Path + "/" + clip.Slug + ".mp4"
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.Mkdir(path, 0777)
+	if _, err := os.Stat(config.Path); os.IsNotExist(err) {
+		err := os.Mkdir(config.Path, 0777)
 		if err != nil {
 			log.Fatal(err)
 		}

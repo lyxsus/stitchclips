@@ -9,7 +9,8 @@ This tool stiches your clips from Twitch automatically and post them to Youtube 
 	* Choose the channel
 	* Choose the period: last day, week, month, all
 	* Choose where you want them saved
-* Stitch the clips downloaded into one video: `stitched.mp4`
+* Stitch the clips downloaded into one video
+	* Choose the output file name
 
 ## Installation
 

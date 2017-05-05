@@ -14,6 +14,7 @@ type Config struct {
 	Period   string `json:"period"`
 	Limit    string `json:"limit"`
 	Path     string `json:"path"`
+	Output   string `json:"output"`
 }
 
 // LoadConfig loads config from file

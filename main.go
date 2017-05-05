@@ -5,9 +5,18 @@ var config = LoadConfig()
 func main() {
 	clips := Clips{}
 
-	clips.GetTopClips(config.Channel, config.Limit, config.Period)
+	clips.GetTop(config.Channel, config.Limit, config.Period)
+
+	done := make(chan bool, len(clips.Clips))
 	for _, clip := range clips.Clips {
-		clip.DownloadClip(config.Path)
+		clip.Download()
+		go clip.ToMPGAsync(done)
 	}
-	clips.StitchClips(config.Path)
+	for i := 0; i < len(clips.Clips); i++ {
+		<-done
+	}
+	clips.Stitch()
+	for _, clip := range clips.Clips {
+		clip.Cleanup()
+	}
 }
