@@ -32,7 +32,7 @@ func (clips Clips) StitchClips(path string) {
 			}
 		}
 		log.Println("Encoding " + clip.Slug + " to .mpg...")
-		cmd := exec.Command("ffmpeg", "-i", mp4Path, "-qscale", "0", mpgPath)
+		cmd := exec.Command("ffmpeg", "-i", mp4Path, "-qscale", "1", mpgPath)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err = cmd.Run()
@@ -43,7 +43,7 @@ func (clips Clips) StitchClips(path string) {
 		io.WriteString(file, concatPath)
 	}
 	log.Println("Sitching...")
-	cmd := exec.Command("ffmpeg", "-f", "concat", "-i", "stitching", "-qscale", "0", "-vcodec", "mpeg4", "-c", "copy", "stitched.mp4")
+	cmd := exec.Command("ffmpeg", "-f", "concat", "-i", "stitching", "-qscale", "1", "-vcodec", "mpeg4", "-c", "copy", "stitched.mp4")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
