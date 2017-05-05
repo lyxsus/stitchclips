@@ -10,6 +10,7 @@ func TestStitch(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 	clips := Clips{}
+	config.Output = "stitched"
 	clips.GetTop("itmejp", "2", "all")
 	for _, clip := range clips.Clips {
 		clip.Download()
