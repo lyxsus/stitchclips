@@ -79,6 +79,7 @@ func (clip Clip) Cleanup() {
 func (clips Clips) Stitch() {
 	log.Println("Sitching...")
 	cmd := exec.Command("ffmpeg", "-f", "concat", "-i", "stitching", "-vcodec", "mpeg4", "-c", "copy", config.Output+".mp4")
+	cmd.Stdout = os.Stdout
 	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
