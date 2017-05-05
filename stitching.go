@@ -38,13 +38,6 @@ func (clip Clip) toMPGSync() {
 		log.Fatal(err)
 	}
 
-	if _, err := os.Stat(config.Output + ".mp4"); os.IsExist(err) {
-		err = os.Remove(config.Output + ".mp4")
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
 	var file *os.File
 	if _, err := os.Stat("stitching"); os.IsNotExist(err) {
 		file, err = os.Create("stitching")
@@ -52,7 +45,7 @@ func (clip Clip) toMPGSync() {
 			log.Fatal(err)
 		}
 	} else {
-		file, err = os.Open("stitching")
+		file, err = os.OpenFile("stitching", os.O_RDWR, 0777)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -79,9 +72,14 @@ func (clip Clip) Cleanup() {
 
 // Stitch uses ffmpeg to concatenate clips .mp4 videos together into stitched.mp4
 func (clips Clips) Stitch() {
+	if _, err := os.Stat(config.Output + ".mp4"); err == nil {
+		err = os.Remove(config.Output + ".mp4")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	log.Println("Sitching...")
 	cmd := exec.Command("ffmpeg", "-f", "concat", "-i", "stitching", "-vcodec", "mpeg4", "-c", "copy", config.Output+".mp4")
-	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)

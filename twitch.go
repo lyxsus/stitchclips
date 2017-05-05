@@ -109,10 +109,13 @@ func (clip *Clip) Download() {
 	log.Printf("Downloading %s...\n", clip.Slug)
 	resp, err := resty.R().
 		Get(videoURL)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	r := bytes.NewReader(resp.Body())
 
-	io.Copy(out, r)
+	_, err = io.Copy(out, r)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -18,6 +18,6 @@ func TestStitch(t *testing.T) {
 	}
 	clips.Stitch()
 	if _, err := os.Stat("stitched.mp4"); err != nil {
-		t.Error("Did not sitch")
+		t.Error("Did not stitch")
 	}
 }
