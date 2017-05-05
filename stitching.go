@@ -38,7 +38,7 @@ func (clip Clip) toMPGSync() {
 		log.Fatal(err)
 	}
 
-	if _, err := os.Stat(config.Output + ".mp4"); err == nil {
+	if _, err := os.Stat(config.Output + ".mp4"); os.IsExist(err) {
 		err = os.Remove(config.Output + ".mp4")
 		if err != nil {
 			log.Fatal(err)
@@ -46,12 +46,10 @@ func (clip Clip) toMPGSync() {
 	}
 
 	var file *os.File
-	if _, err := os.Stat("stitching"); err != nil {
-		if err == os.ErrNotExist {
-			file, err = os.Create("stitching")
-			if err != nil {
-				log.Fatal(err)
-			}
+	if _, err := os.Stat("stitching"); os.IsNotExist(err) {
+		file, err = os.Create("stitching")
+		if err != nil {
+			log.Fatal(err)
 		}
 	} else {
 		file, err = os.Open("stitching")
@@ -59,8 +57,12 @@ func (clip Clip) toMPGSync() {
 			log.Fatal(err)
 		}
 	}
+	defer file.Close()
 	concatPath := fmt.Sprintf("file '" + mpgPath + "'\n")
-	io.WriteString(file, concatPath)
+	_, err = io.WriteString(file, concatPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Cleanup cleans the output directory of the MPG file
@@ -79,7 +81,6 @@ func (clip Clip) Cleanup() {
 func (clips Clips) Stitch() {
 	log.Println("Sitching...")
 	cmd := exec.Command("ffmpeg", "-f", "concat", "-i", "stitching", "-vcodec", "mpeg4", "-c", "copy", config.Output+".mp4")
-	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
