@@ -45,7 +45,7 @@ func (clip Clip) toMPGSync(stichingFile string) error {
 		return err
 	}
 	defer file.Close()
-	concatPath := fmt.Sprintf("file '" + mpgPath + "'\n")
+	concatPath := fmt.Sprintf("file '" + clip.Slug + ".mpg" + "'\n")
 	_, err = io.WriteString(file, concatPath)
 	if err != nil {
 		log.Printf("Error writing into %s: %s\n", stichingFile, err)
@@ -72,7 +72,7 @@ func (clip Clip) Cleanup() error {
 func (clips Clips) Stitch(outputFile string, stitchingFile string) error {
 	log.Println("Sitching...")
 	cmd := exec.Command("ffmpeg", "-f", "concat", "-i", stitchingFile, "-vcodec", "mpeg4", "-c", "copy", outputFile+".mp4")
-	// cmd.Stderr = os.Stderr
+	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
 		log.Printf("Error running stitching: %s\n", err)

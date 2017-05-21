@@ -16,6 +16,7 @@ func TestGetTop(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
+	t.Log("Testing GetTop")
 	clips := Clips{}
 	clips.GetTop("itmejp", "2", "all")
 	if len(clips.Clips) != 2 {
@@ -27,11 +28,12 @@ func TestGetTop(t *testing.T) {
 }
 
 func TestDownload(t *testing.T) {
+	t.Log("Testing Download")
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 	testClip.Download()
-	if _, err := os.Stat("clips_test/" + testClip.Slug + ".mp4"); os.IsNotExist(err) {
+	if _, err := os.Stat(config.Path + "/" + testClip.Slug + ".mp4"); os.IsNotExist(err) {
 		t.Error("DownloadFile: File not downloaded")
 	}
 }
@@ -40,6 +42,8 @@ func TestMain(m *testing.M) {
 	if config.ClientID == "" {
 		config.ClientID = os.Getenv("clientId")
 	}
-	os.Remove("clips_test")
+
+	os.RemoveAll(config.Path)
+	os.Mkdir(config.Path, 0777)
 	os.Exit(m.Run())
 }

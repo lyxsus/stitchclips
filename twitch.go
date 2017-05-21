@@ -98,7 +98,10 @@ func (clip *Clip) Download() error {
 		if err != nil {
 			log.Printf("Error creating folder: %s\n", err)
 		}
-	} else {
+	}
+
+	if _, err := os.Stat(outString); !os.IsNotExist(err) {
+		log.Printf("%s already downloaded\n", clip.Slug)
 		return nil
 	}
 

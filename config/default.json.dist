@@ -1,8 +1,5 @@
 {
 	"clientId": "TWITCH CLIENT ID",
-	"channel": "itmejp",
-	"period": "week",
-	"limit": "10",
+	"port": "8000"	
 	"path": "clips",
-	"output": "videoname"
 }

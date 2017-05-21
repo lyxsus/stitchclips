@@ -1,22 +1,10 @@
 # stitchclips [![Build Status](https://travis-ci.com/Sadzeih/stitchclips.svg?token=yuJvgH2HnePzuxC8VB7p&branch=master)](https://travis-ci.com/Sadzeih/stitchclips)
 
-This tool stiches your clips from Twitch automatically and post them to Youtube or Twitch Videos
+This API stiches your clips from Twitch automatically and post them to Youtube or Twitch Videos
 
-### Note
+### Documentation
 
-The build is currently not passing because there's been a lot of changes and I need to test it all.
-
-Also, I need to document the API.
-
-### Features
-
-* Downloads top clips from a Twitch channel
-	* Choose how many clips you want
-	* Choose the channel
-	* Choose the period: last day, week, month, all
-	* Choose where you want them saved
-* Stitch the clips downloaded into one video
-	* Choose the output file name
+Visit the [wiki for documentation on the API](https://github.com/Sadzeih/stitchclips/wiki)
 
 ## Installation
 
@@ -28,6 +16,8 @@ First download dependencies and build the project
 
 ```bash
 go get gopkg.in/resty.v0
+go get github.com/gorilla/mux
+go get github.com/satori/go.uuid
 go build
 ```
 
@@ -35,10 +25,8 @@ Then you need to create a config file that suits your needs, like so:
 ```json
 {
 	"clientId": "TWITCH CLIENT ID",
-	"channel": "itmejp",
-	"period": "week",
-	"limit": "10",
-	"path": "clips"
+	"port": "8000",
+	"path": "clips_test"
 }
 ```
 *Note: you need to have one config file per environment. If you want a config file for production then name it `production`*

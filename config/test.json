@@ -1,8 +1,5 @@
 {
 	"clientId": "",
-	"channel": "itmejp",
-	"period": "week",
-	"limit": "10",
-	"path": "clips_test",
-	"output": "stitched"
+	"port": "8000",
+	"path": "clips_test"
 }
