@@ -12,5 +12,7 @@ before_install:
 
 install:
   - go get gopkg.in/resty.v0
+  - go get github.com/gorilla/mux
+  - go get github.com/satori/go.uuid
 
 script: GOENV=test go test ./...
