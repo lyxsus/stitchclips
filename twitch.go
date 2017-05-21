@@ -64,26 +64,53 @@ type Clips struct {
 	Cursor string `json:"_cursor"`
 }
 
-var url = "https://api.twitch.tv/kraken/clips/top"
+const urlTop = "https://api.twitch.tv/kraken/clips/top"
+const urlClip = "https://api.twitch.tv/kraken/clips/"
 
 // GetTop gets multiple clips from a twitch channel
-func (clips *Clips) GetTop(channel string, limit string, period string) {
+func (clips *Clips) GetTop(channel string, limit string, period string) error {
 	log.Printf("Getting the top %s clips for %s during the last %s", limit, channel, period)
 	resp, err := resty.R().
 		SetQueryParams(map[string]string{
 			"channel": channel,
 			"limit":   limit,
 			"period":  period}).
-		SetHeader("Client-ID", config.ClientID).
+		SetHeader("Client-ID", a.Config.ClientID).
 		SetHeader("Accept", "application/vnd.twitchtv.v5+json").
-		Get(url)
+		Get(urlTop)
 	if err != nil {
 		log.Printf("Error getting clips from Twitch: %s\n", err)
+		return err
 	}
 	err = json.Unmarshal(resp.Body(), clips)
 	if err != nil {
 		log.Printf("Error unserializing json: %s\n", err)
+		return err
 	}
+	return nil
+}
+
+// Get gets information about Clips from Twitch
+func (clip *Clip) Get() error {
+	if clip.Slug == "" {
+		err := TwitchError("Clip should have a slug")
+		log.Printf("Error on Get clip: %s\n", err)
+		return err
+	}
+	log.Printf("Getting information about %s from Twitch", clip.Slug)
+	resp, err := resty.R().
+		SetHeader("Client-ID", a.Config.ClientID).
+		SetHeader("Accept", "application/vnd.twitchtv.v5+json").
+		Get(urlClip + clip.Slug)
+	if err != nil {
+		log.Printf("Error getting clip from Twitch: %s\n", err)
+	}
+	err = json.Unmarshal(resp.Body(), clip)
+	if err != nil {
+		log.Printf("Error unserializing json: %s\n", err)
+		return err
+	}
+	return nil
 }
 
 // Download downloads the clip from Twitch
@@ -91,12 +118,13 @@ func (clip *Clip) Download() error {
 	videoURL := clip.Thumbnails.Medium
 	videoURL = strings.Replace(videoURL, "-preview-480x272.jpg", ".mp4", -1)
 
-	outString := config.Path + "/" + clip.Slug + ".mp4"
+	outString := a.Config.Path + "/" + clip.Slug + ".mp4"
 
-	if _, err := os.Stat(config.Path); os.IsNotExist(err) {
-		err := os.Mkdir(config.Path, 0777)
+	if _, err := os.Stat(a.Config.Path); os.IsNotExist(err) {
+		err := os.Mkdir(a.Config.Path, 0777)
 		if err != nil {
 			log.Printf("Error creating folder: %s\n", err)
+			return err
 		}
 	}
 
@@ -109,6 +137,7 @@ func (clip *Clip) Download() error {
 	defer out.Close()
 	if err != nil {
 		log.Printf("Error creating %s: %s\n", outString, err)
+		return err
 	}
 
 	log.Printf("Downloading %s...\n", clip.Slug)
@@ -116,6 +145,7 @@ func (clip *Clip) Download() error {
 		Get(videoURL)
 	if err != nil {
 		log.Printf("Error getting video data: %s\n", err)
+		return err
 	}
 
 	r := bytes.NewReader(resp.Body())
@@ -123,6 +153,7 @@ func (clip *Clip) Download() error {
 	_, err = io.Copy(out, r)
 	if err != nil {
 		log.Printf("Error saving video data: %s", err)
+		return err
 	}
 	return nil
 }

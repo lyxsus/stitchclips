@@ -10,6 +10,7 @@ import (
 // Config represents stitchclips configuration
 type Config struct {
 	ClientID string `json:"clientId"`
+	Host     string `json:"host"`
 	Port     string `json:"port"`
 	Path     string `json:"path"`
 }

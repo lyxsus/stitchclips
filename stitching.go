@@ -1,34 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"io"
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
-// ToMPGAsync encodes a MP4 into a MPG asynchronously
-func (clip Clip) ToMPGAsync(stichingFile string, done chan bool) error {
-	err := clip.toMPGSync(stichingFile)
+// PrepareAsync encodes a MP4 into an intermediate asynchronously
+func (clip Clip) PrepareAsync(stichingFile string, done chan bool, errors chan error) error {
+	err := clip.PrepareSync(stichingFile)
 	done <- true
+	errors <- err
 	return err
 }
 
-// ToMPG encodes a MP4 into a MPG synchronously
-func (clip Clip) ToMPG(stichingFile string) error {
-	err := clip.toMPGSync(stichingFile)
+// Prepare encodes a MP4 into a intermediate file synchronously
+func (clip Clip) Prepare(stichingFile string) error {
+	err := clip.PrepareSync(stichingFile)
 	return err
 }
 
-// ToMPGSync encodes a MP4 into a MPG synchronously
-func (clip Clip) toMPGSync(stichingFile string) error {
-	mpgPath := config.Path + "/" + clip.Slug + ".mpg"
+// PrepareSync encodes a MP4 into a intermediate file synchronously
+func (clip Clip) PrepareSync(stichingFile string) error {
+	intermediatePath := a.Config.Path + "/" + clip.Slug + ".ts"
 
-	if _, err := os.Stat(mpgPath); os.IsNotExist(err) {
+	if _, err := os.Stat(intermediatePath); os.IsNotExist(err) {
 		log.Println("Encoding " + clip.Slug + " to .mpg...")
-		mp4Path := config.Path + "/" + clip.Slug + ".mp4"
-		cmd := exec.Command("ffmpeg", "-i", mp4Path, mpgPath)
+		mp4Path := a.Config.Path + "/" + clip.Slug + ".mp4"
+		cmd := exec.Command("ffmpeg", "-i", mp4Path, "-c", "copy", "-bsf:v", "h264_mp4toannexb", "-f", "mpegts", intermediatePath)
 		err := cmd.Run()
 		if err != nil {
 			log.Printf("Error on running encoding %s into mpg: %s\n", mp4Path, err)
@@ -36,27 +36,12 @@ func (clip Clip) toMPGSync(stichingFile string) error {
 		}
 		log.Println("Done encoding " + clip.Slug)
 	}
-
-	var file *os.File
-	log.Printf("Opening stitching file: %s.\n", stichingFile)
-	file, err := os.OpenFile(stichingFile, os.O_RDWR|os.O_APPEND, 0777)
-	if err != nil {
-		log.Printf("Error opening %s: %s\n", stichingFile, err)
-		return err
-	}
-	defer file.Close()
-	concatPath := fmt.Sprintf("file '" + clip.Slug + ".mpg" + "'\n")
-	_, err = io.WriteString(file, concatPath)
-	if err != nil {
-		log.Printf("Error writing into %s: %s\n", stichingFile, err)
-		return err
-	}
 	return nil
 }
 
 // Cleanup deletes the .mp4 video
 func (clip Clip) Cleanup() error {
-	mp4Path := config.Path + "/" + clip.Slug + ".mp4"
+	mp4Path := a.Config.Path + "/" + clip.Slug + ".mp4"
 	if _, err := os.Stat(mp4Path); err == nil {
 		log.Println("Cleaning " + mp4Path)
 		err := os.Remove(mp4Path)
@@ -71,11 +56,28 @@ func (clip Clip) Cleanup() error {
 // Stitch uses ffmpeg to concatenate clips .mp4 videos together into stitched.mp4
 func (clips Clips) Stitch(outputFile string, stitchingFile string) error {
 	log.Println("Sitching...")
-	cmd := exec.Command("ffmpeg", "-f", "concat", "-i", stitchingFile, "-vcodec", "mpeg4", "-c", "copy", outputFile+".mp4")
-	cmd.Stderr = os.Stderr
+	slugs := make([]string, 0)
+	for _, clip := range clips.Clips {
+		if clip.Slug != "" {
+			slugs = append(slugs, a.Config.Path+"/"+clip.Slug+".ts")
+		}
+	}
+	concatString := strings.Join(slugs, "|")
+	cmd := exec.Command("ffmpeg", "-i", "concat:"+concatString, "-c", "copy", "-bsf:a", "aac_adtstoasc", outputFile+".mp4")
 	err := cmd.Run()
 	if err != nil {
 		log.Printf("Error running stitching: %s\n", err)
+		return err
+	}
+	cmd = exec.Command("ffmpeg", "-i", outputFile+".mp4", "-c", "copy", "-movflags", "+faststart", outputFile+"_fs.mp4")
+	err = cmd.Run()
+	if err != nil {
+		log.Printf("Error running stitching: %s\n", err)
+		return err
+	}
+	err = os.Rename(outputFile+"_fs.mp4", outputFile+".mp4")
+	if err != nil {
+		log.Printf("Error renaming file: %s\n", err)
 		return err
 	}
 	return nil

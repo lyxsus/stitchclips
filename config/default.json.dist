@@ -1,5 +1,6 @@
 {
 	"clientId": "TWITCH CLIENT ID",
-	"port": "8000"	
+	"host": "http://localhost"
+	"port": "8000",
 	"path": "clips",
 }

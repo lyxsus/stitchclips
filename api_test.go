@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
@@ -67,7 +66,12 @@ func TestHandleStitch(t *testing.T) {
 	if err != nil {
 		t.Error("Error on unserializing json", err)
 	}
-	if _, err := os.Stat(video.URL); os.IsNotExist(err) {
-		t.Error("Video file should exist")
+	request, err = http.NewRequest("GET", "/video/"+video.ID+".mp4", nil)
+	r = executeRequest(request)
+	if err != nil {
+		t.Error("Error getting video data: ", err)
+	}
+	if r.Code >= 300 {
+		t.Error("Fail stitching")
 	}
 }

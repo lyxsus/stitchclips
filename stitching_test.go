@@ -12,19 +12,25 @@ func TestStitch(t *testing.T) {
 	}
 	t.Log("Testing Stitch")
 	clips := Clips{}
-	outputFile := config.Path + "/stitched"
-	stitchingFile := config.Path + "/stitching"
+	outputFile := a.Config.Path + "/stitched"
+	stitchingFile := a.Config.Path + "/stitching"
 	_, err := os.Create(stitchingFile)
 	if err != nil {
 		log.Println("Error creating stitchingFile: ", err)
 	}
 	clips.GetTop("itmejp", "2", "all")
 	for _, clip := range clips.Clips {
-		clip.Download()
-		clip.ToMPG(stitchingFile)
+		err = clip.Download()
+		if err != nil {
+			t.Error(err)
+		}
+		err = clip.Prepare(stitchingFile)
+		if err != nil {
+			t.Error(err)
+		}
 	}
 	clips.Stitch(outputFile, stitchingFile)
-	if _, err := os.Stat(config.Path + "/stitched.mp4"); err != nil {
+	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
 		t.Error("Did not stitch")
 	}
 }

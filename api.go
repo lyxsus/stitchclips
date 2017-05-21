@@ -14,16 +14,25 @@ import (
 
 // StitchedVideo is the compilation of clips
 type StitchedVideo struct {
+	ID  string `json:"id"`
 	URL string `json:"url"`
 }
 
 // Router returns the router containing all the routes for the API
 func Router() *mux.Router {
 	r := mux.NewRouter()
+	r.Host(a.Config.Host)
 	r.HandleFunc("/clips/{channel}/{period}/{limit}", HandleGetClips)
 	r.HandleFunc("/stitch", HandleStitch).Methods("POST")
+	r.HandleFunc("/video/{id}", HandleVideo).Methods("GET")
 
 	return r
+}
+
+// HandleVideo return the .MP4 stitched video
+func HandleVideo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	http.ServeFile(w, r, a.Config.Path+"/"+vars["id"])
 }
 
 // HandleGetClips returns clips depending on parameters
@@ -44,7 +53,7 @@ func HandleGetClips(w http.ResponseWriter, r *http.Request) {
 // HandleStitch stiches clips passed as parameters and returns video URL
 func HandleStitch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	stitchingFile := config.Path + "/" + GetUUID()
+	stitchingFile := a.Config.Path + "/" + GetUUID()
 	log.Printf("Creating stitching file: %s.\n", stitchingFile)
 	_, err := os.Create(stitchingFile)
 	if err != nil {
@@ -52,7 +61,8 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	outputFile := config.Path + "/" + GetUUID()
+	outputFile := GetUUID()
+	outputPath := a.Config.Path + "/" + outputFile
 	clips := Clips{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -66,32 +76,49 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	done := make(chan bool, len(clips.Clips))
+	errors := make(chan error, len(clips.Clips))
 	for _, clip := range clips.Clips {
-		clip.Download()
-		go clip.ToMPGAsync(stitchingFile, done)
+		err := clip.Get()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		err = clip.Download()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		err = clip.PrepareAsync(stitchingFile, done, errors)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 	for i := 0; i < len(clips.Clips); i++ {
 		<-done
+		err = <-errors
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
-	err = clips.Stitch(outputFile, stitchingFile)
+
+	err = clips.Stitch(outputPath, stitchingFile)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	video := StitchedVideo{outputFile + ".mp4"}
+	video := StitchedVideo{
+		ID:  outputFile,
+		URL: a.Config.Host + ":" + a.Config.Port + "/video/" + outputFile + ".mp4",
+	}
 	json, err := json.Marshal(video)
 	if err != nil {
 		log.Printf("Error on serializing json: %s\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-	}
-	for _, clip := range clips.Clips {
-		err = clip.Cleanup()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 	}
 	w.Write(json)
 }

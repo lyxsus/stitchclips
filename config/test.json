@@ -1,5 +1,6 @@
 {
 	"clientId": "",
+	"host": "http://localhost",
 	"port": "8000",
 	"path": "clips_test"
 }
