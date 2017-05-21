@@ -2,6 +2,12 @@
 
 This tool stiches your clips from Twitch automatically and post them to Youtube or Twitch Videos
 
+### Note
+
+The build is currently not passing because there's been a lot of changes and I need to test it all.
+
+Also, I need to document the API.
+
 ### Features
 
 * Downloads top clips from a Twitch channel

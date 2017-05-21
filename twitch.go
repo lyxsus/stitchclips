@@ -78,16 +78,16 @@ func (clips *Clips) GetTop(channel string, limit string, period string) {
 		SetHeader("Accept", "application/vnd.twitchtv.v5+json").
 		Get(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error getting clips from Twitch: %s\n", err)
 	}
 	err = json.Unmarshal(resp.Body(), clips)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error unserializing json: %s\n", err)
 	}
 }
 
 // Download downloads the clip from Twitch
-func (clip *Clip) Download() {
+func (clip *Clip) Download() error {
 	videoURL := clip.Thumbnails.Medium
 	videoURL = strings.Replace(videoURL, "-preview-480x272.jpg", ".mp4", -1)
 
@@ -96,27 +96,30 @@ func (clip *Clip) Download() {
 	if _, err := os.Stat(config.Path); os.IsNotExist(err) {
 		err := os.Mkdir(config.Path, 0777)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Error creating folder: %s\n", err)
 		}
+	} else {
+		return nil
 	}
 
 	out, err := os.Create(outString)
 	defer out.Close()
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error creating %s: %s\n", outString, err)
 	}
 
 	log.Printf("Downloading %s...\n", clip.Slug)
 	resp, err := resty.R().
 		Get(videoURL)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error getting video data: %s\n", err)
 	}
 
 	r := bytes.NewReader(resp.Body())
 
 	_, err = io.Copy(out, r)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error saving video data: %s", err)
 	}
+	return nil
 }
