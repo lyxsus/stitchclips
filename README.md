@@ -1,6 +1,6 @@
 # stitchclips [![Build Status](https://travis-ci.com/Sadzeih/stitchclips.svg?token=yuJvgH2HnePzuxC8VB7p&branch=master)](https://travis-ci.com/Sadzeih/stitchclips)
 
-This API stiches your clips from Twitch automatically.
+This API stiches your clips from Twitch into one video automatically.
 
 ### Documentation
 
