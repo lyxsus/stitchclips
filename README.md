@@ -25,6 +25,7 @@ Then you need to create a config file that suits your needs, like so:
 ```json
 {
 	"clientId": "TWITCH CLIENT ID",
+	"host": "http://localhost",
 	"port": "8000",
 	"path": "clips_test"
 }
