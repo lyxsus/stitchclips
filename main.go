@@ -9,5 +9,5 @@ var config = LoadConfig()
 
 func main() {
 	log.Println("Starting server on port 8000")
-	log.Fatal(http.ListenAndServe(":8000", Router()))
+	log.Fatal(http.ListenAndServe(":"+config.Port, Router()))
 }

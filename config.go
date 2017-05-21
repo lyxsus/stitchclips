@@ -10,9 +10,7 @@ import (
 // Config represents stitchclips configuration
 type Config struct {
 	ClientID string `json:"clientId"`
-	Channel  string `json:"channel"`
-	Period   string `json:"period"`
-	Limit    string `json:"limit"`
+	Port     string `json:"port"`
 	Path     string `json:"path"`
 }
 
