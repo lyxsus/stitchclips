@@ -112,7 +112,7 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 	}
 	video := StitchedVideo{
 		ID:  outputFile,
-		URL: a.Config.Host + ":" + a.Config.Port + "/video/" + outputFile + ".mp4",
+		URL: a.Config.Host + "/video/" + outputFile + ".mp4",
 	}
 	json, err := json.Marshal(video)
 	if err != nil {
