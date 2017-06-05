@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 // App is the server App structure. It contains the router and the configuration
@@ -30,7 +31,8 @@ func main() {
 			os.Exit(1)
 		}
 	}
-
 	log.Println("Starting server on port 8000")
-	log.Fatal(http.ListenAndServe(":"+a.Config.Port, Router()))
+
+	handler := cors.Default().Handler(Router())
+	log.Fatal(http.ListenAndServe(":"+a.Config.Port, handler))
 }
