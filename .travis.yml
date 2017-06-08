@@ -30,6 +30,8 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./scripts/deploy.sh
+  script: 
+    - rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/stitchclips root@sadzeih.com:/src/stitchclips
+    - ssh -tt root@sadzeih.com "systemctl restart stitchclips-api"
   on:
     branch: master
