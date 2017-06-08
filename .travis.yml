@@ -22,7 +22,7 @@ install:
 script: GOENV=test go test ./...
 
 before_deploy:
-  - openssl aes-256-cbc -K $encrypted_ccfe83a00b7d_key -iv $encrypted_ccfe83a00b7d_iv -in deploy_rsa.enc -out ~\/deploy_rsa -d
+  - openssl aes-256-cbc -K $encrypted_ccfe83a00b7d_key -iv $encrypted_ccfe83a00b7d_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
   - eval "$(ssh-agent -s)"
   - chmod 600 /tmp/deploy_rsa
   - ssh-add /tmp/deploy_rsa
@@ -30,6 +30,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/stitchclips root@sadzeih.com:/src/stitchclips
+  script: ./scripts/deploy.sh
   on:
     branch: master
