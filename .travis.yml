@@ -5,6 +5,9 @@ sudo: required
 go:
   - 1.8
 
+addons:
+  ssh_known_hosts: sadzeih.com
+
 before_install:
   - sudo add-apt-repository ppa:mc3man/trusty-media -y
   - sudo apt-get update -qq
