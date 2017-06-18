@@ -21,6 +21,12 @@ go get github.com/satori/go.uuid
 go build
 ```
 
+or alternatively
+
+```bash
+go get github.com/Sadzeih/stitchclips
+```
+
 Then you need to create a config file that suits your needs, like so:
 ```json
 {
