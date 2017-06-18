@@ -61,3 +61,9 @@ To run tests, precise the config file you want, for example:
 ```bash
 GOENV=test go test
 ```
+
+## Known issues
+
+* Simultaneous stitching & downloading:
+	* ffmpeg only allows one concatenation at a time it seems
+	* downloading a file must be done once to avoid writing problems
