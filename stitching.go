@@ -55,10 +55,20 @@ func (clip Clip) Cleanup() error {
 
 // Stitch uses ffmpeg to concatenate clips .mp4 videos together into stitched.mp4
 func (clips Clips) Stitch(outputFile string, stitchingFile string) error {
+	if _, err := os.Stat(outputFile); err == nil {
+		log.Println("Already stitched")
+		return nil
+	}
+
 	log.Println("Sitching...")
 	slugs := make([]string, 0)
 	for _, clip := range clips.Clips {
 		if clip.Slug != "" {
+			err := os.Chmod(a.Config.Path+"/"+clip.Slug+".ts", 0755)
+			if err != nil {
+				log.Printf("Error assigning permissions to file: %s\n", err)
+				return err
+			}
 			slugs = append(slugs, a.Config.Path+"/"+clip.Slug+".ts")
 		}
 	}
@@ -80,5 +90,11 @@ func (clips Clips) Stitch(outputFile string, stitchingFile string) error {
 		log.Printf("Error renaming file: %s\n", err)
 		return err
 	}
+	err = os.Chmod(outputFile+".mp4", 0755)
+	if err != nil {
+		log.Printf("Error assigning permissions to file: %s\n", err)
+		return err
+	}
+	log.Println("Done stitching")
 	return nil
 }

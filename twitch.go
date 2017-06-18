@@ -140,7 +140,7 @@ func (clip *Clip) Download() error {
 		}
 	}
 
-	if _, err := os.Stat(outString); !os.IsNotExist(err) {
+	if _, err := os.Stat(outString); err == nil {
 		log.Printf("%s already downloaded\n", clip.Slug)
 		return nil
 	}
@@ -149,6 +149,12 @@ func (clip *Clip) Download() error {
 	defer out.Close()
 	if err != nil {
 		log.Printf("Error creating %s: %s\n", outString, err)
+		return err
+	}
+
+	err = os.Chmod(outString, 0755)
+	if err != nil {
+		log.Printf("Error assigning permissions to file %s: %s\n", outString, err)
 		return err
 	}
 

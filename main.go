@@ -28,7 +28,7 @@ func initialise() {
 func main() {
 	initialise()
 	if _, err := os.Stat(a.Config.Path); os.IsNotExist(err) {
-		err := os.Mkdir(a.Config.Path, 0777)
+		err := os.Mkdir(a.Config.Path, 0755)
 		if err != nil {
 			log.Printf("Couldn't create %s: %s\n", a.Config.Path, err)
 			os.Exit(1)

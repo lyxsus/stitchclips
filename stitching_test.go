@@ -10,7 +10,7 @@ func TestStitch(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
-	t.Log("Testing Stitch")
+	log.Println("Starting TestStitch test 1")
 	clips := Clips{}
 	outputFile := a.Config.Path + "/stitched"
 	stitchingFile := a.Config.Path + "/stitching"
@@ -33,7 +33,7 @@ func TestStitch(t *testing.T) {
 	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
 		t.Error("Did not stitch")
 	}
-
+	log.Println("Starting TestStitch test 2")
 	clips.Stitch(outputFile, stitchingFile)
 	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
 		t.Error("Did not stitch")

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,6 +19,7 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 }
 
 func TestHandleGetClips(t *testing.T) {
+	log.Println("Starting TestHandleGetClips test 1")
 	request, err := http.NewRequest("GET", "/clips/itmejp/all/2", nil)
 	if err != nil {
 		t.Error("Error on request", err)
@@ -46,6 +48,7 @@ var testClip2 = Clip{
 }
 
 func TestHandleStitch(t *testing.T) {
+	log.Println("Starting TestHandleStitch test 1")
 	clips := Clips{}
 	clips.Clips = append(clips.Clips, testClip)
 	clips.Clips = append(clips.Clips, testClip2)
@@ -77,6 +80,7 @@ func TestHandleStitch(t *testing.T) {
 		t.Error("Fail stitching")
 	}
 
+	log.Println("Starting TestHandleStitch test 2")
 	request, err = http.NewRequest("POST", "/stitch", bytes.NewReader(jsonBody))
 	if err != nil {
 		t.Error("Error on request", err)

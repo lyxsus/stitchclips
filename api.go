@@ -91,7 +91,11 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 
 	cache, err := a.Db.Get(clips.Slugs()).Result()
 	if err != nil {
-		log.Printf("[HandleStitch] Error while retrieving cache: %s\n", err)
+		if err == redis.Nil {
+			log.Printf("[HandleStitch] Error while retrieving cache: %s\n", err)
+		} else {
+			log.Println("[HandleStitch] Cache not found")
+		}
 	} else {
 		log.Println("[HandleStitch] Found cache.")
 		w.Write([]byte(cache))
@@ -104,6 +108,11 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error on HandleStitch: %s\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	err = os.Chmod(stitchingFile, 0755)
+	if err != nil {
+		log.Printf("Error assigning permissions to file: %s\n", err)
 		return
 	}
 
@@ -135,10 +144,12 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = clips.Stitch(outputPath, stitchingFile)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	if _, err = os.Stat(outputPath); os.IsNotExist(err) {
+		err = clips.Stitch(outputPath, stitchingFile)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 	video := StitchedVideo{
 		ID:  outputFile,
