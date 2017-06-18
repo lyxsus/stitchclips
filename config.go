@@ -7,12 +7,21 @@ import (
 	"os"
 )
 
-// Config represents stitchclips configuration
-type Config struct {
-	ClientID string `json:"clientId"`
+// RedisConfig contains needed configuration to connect to the Redis DB
+type RedisConfig struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
-	Path     string `json:"path"`
+	Password string `json:"password"`
+	Db       int    `json:"db"`
+}
+
+// Config represents stitchclips configuration
+type Config struct {
+	ClientID string      `json:"clientId"`
+	Host     string      `json:"host"`
+	Port     string      `json:"port"`
+	Path     string      `json:"path"`
+	Redis    RedisConfig `json:"redis"`
 }
 
 // LoadConfig loads config from file

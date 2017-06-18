@@ -90,6 +90,18 @@ func (clips *Clips) GetTop(channel string, limit string, period string) error {
 	return nil
 }
 
+// Slugs returns the slugs of all clips contatenated with a space
+func (clips *Clips) Slugs() string {
+	str := ""
+	for index, clip := range clips.Clips {
+		if index != 0 {
+			str += " "
+		}
+		str += clip.Slug
+	}
+	return str
+}
+
 // Get gets information about Clips from Twitch
 func (clip *Clip) Get() error {
 	if clip.Slug == "" {
