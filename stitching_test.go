@@ -33,4 +33,9 @@ func TestStitch(t *testing.T) {
 	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
 		t.Error("Did not stitch")
 	}
+
+	clips.Stitch(outputFile, stitchingFile)
+	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
+		t.Error("Did not stitch")
+	}
 }

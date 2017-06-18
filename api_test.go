@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -72,6 +73,31 @@ func TestHandleStitch(t *testing.T) {
 		t.Error("Error getting video data: ", err)
 	}
 	if r.Code >= 300 {
+		fmt.Printf("%s", r.Body)
+		t.Error("Fail stitching")
+	}
+
+	request, err = http.NewRequest("POST", "/stitch", bytes.NewReader(jsonBody))
+	if err != nil {
+		t.Error("Error on request", err)
+	}
+	r = executeRequest(request)
+	body, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		t.Error("Error on reading Body", err)
+	}
+	video = StitchedVideo{}
+	err = json.Unmarshal(body, &video)
+	if err != nil {
+		t.Error("Error on unserializing json", err)
+	}
+	request, err = http.NewRequest("GET", "/video/"+video.ID+".mp4", nil)
+	r = executeRequest(request)
+	if err != nil {
+		t.Error("Error getting video data: ", err)
+	}
+	if r.Code >= 300 {
+		fmt.Printf("%s", r.Body)
 		t.Error("Fail stitching")
 	}
 }
