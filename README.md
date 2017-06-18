@@ -11,6 +11,7 @@ Visit the [wiki for documentation on the API](https://github.com/Sadzeih/stitchc
 ### Required packages
 
 * ffmpeg
+* redis
 
 First download dependencies and build the project
 
@@ -33,7 +34,13 @@ Then you need to create a config file that suits your needs, like so:
 	"clientId": "TWITCH CLIENT ID",
 	"host": "http://localhost",
 	"port": "8000",
-	"path": "clips_test"
+	"path": "clips_test",
+	"redis": {
+		"host": "localhost",
+		"port": "6379",
+		"passsword": "",
+		"db": 0
+	}
 }
 ```
 *Note: you need to have one config file per environment. If you want a config file for production then name it `production`*
