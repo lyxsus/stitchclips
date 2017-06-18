@@ -37,14 +37,3 @@ func TestDownload(t *testing.T) {
 		t.Error("DownloadFile: File not downloaded")
 	}
 }
-
-func TestMain(m *testing.M) {
-	initialise()
-	if a.Config.ClientID == "" {
-		a.Config.ClientID = os.Getenv("clientId")
-	}
-
-	os.RemoveAll(a.Config.Path)
-	os.Mkdir(a.Config.Path, 0777)
-	os.Exit(m.Run())
-}

@@ -3,7 +3,9 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,6 +19,7 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 }
 
 func TestHandleGetClips(t *testing.T) {
+	log.Println("Starting TestHandleGetClips test 1")
 	request, err := http.NewRequest("GET", "/clips/itmejp/all/2", nil)
 	if err != nil {
 		t.Error("Error on request", err)
@@ -45,6 +48,7 @@ var testClip2 = Clip{
 }
 
 func TestHandleStitch(t *testing.T) {
+	log.Println("Starting TestHandleStitch test 1")
 	clips := Clips{}
 	clips.Clips = append(clips.Clips, testClip)
 	clips.Clips = append(clips.Clips, testClip2)
@@ -72,6 +76,32 @@ func TestHandleStitch(t *testing.T) {
 		t.Error("Error getting video data: ", err)
 	}
 	if r.Code >= 300 {
+		fmt.Printf("%s", r.Body)
+		t.Error("Fail stitching")
+	}
+
+	log.Println("Starting TestHandleStitch test 2")
+	request, err = http.NewRequest("POST", "/stitch", bytes.NewReader(jsonBody))
+	if err != nil {
+		t.Error("Error on request", err)
+	}
+	r = executeRequest(request)
+	body, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		t.Error("Error on reading Body", err)
+	}
+	video = StitchedVideo{}
+	err = json.Unmarshal(body, &video)
+	if err != nil {
+		t.Error("Error on unserializing json", err)
+	}
+	request, err = http.NewRequest("GET", "/video/"+video.ID+".mp4", nil)
+	r = executeRequest(request)
+	if err != nil {
+		t.Error("Error getting video data: ", err)
+	}
+	if r.Code >= 300 {
+		fmt.Printf("%s", r.Body)
 		t.Error("Fail stitching")
 	}
 }

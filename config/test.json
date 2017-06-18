@@ -2,5 +2,11 @@
 	"clientId": "",
 	"host": "http://localhost",
 	"port": "8000",
-	"path": "clips_test"
+	"path": "clips_test",
+	"redis": {
+		"host": "localhost",
+		"port": "6379",
+		"db": 0,
+		"password": ""
+	}
 }

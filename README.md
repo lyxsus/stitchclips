@@ -1,4 +1,4 @@
-# stitchclips [![Build Status](https://travis-ci.com/Sadzeih/stitchclips.svg?token=yuJvgH2HnePzuxC8VB7p&branch=master)](https://travis-ci.com/Sadzeih/stitchclips)
+# stitchclips [![Build Status](https://travis-ci.org/Sadzeih/stitchclips.svg?branch=master)](https://travis-ci.org/Sadzeih/stitchclips)
 
 This API stiches your clips from Twitch into one video automatically.
 
@@ -11,6 +11,7 @@ Visit the [wiki for documentation on the API](https://github.com/Sadzeih/stitchc
 ### Required packages
 
 * ffmpeg
+* redis
 
 First download dependencies and build the project
 
@@ -21,13 +22,25 @@ go get github.com/satori/go.uuid
 go build
 ```
 
+or alternatively
+
+```bash
+go get github.com/Sadzeih/stitchclips
+```
+
 Then you need to create a config file that suits your needs, like so:
 ```json
 {
 	"clientId": "TWITCH CLIENT ID",
 	"host": "http://localhost",
 	"port": "8000",
-	"path": "clips_test"
+	"path": "clips_test",
+	"redis": {
+		"host": "localhost",
+		"port": "6379",
+		"passsword": "",
+		"db": 0
+	}
 }
 ```
 *Note: you need to have one config file per environment. If you want a config file for production then name it `production`*

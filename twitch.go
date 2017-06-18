@@ -90,6 +90,18 @@ func (clips *Clips) GetTop(channel string, limit string, period string) error {
 	return nil
 }
 
+// Slugs returns the slugs of all clips contatenated with a space
+func (clips *Clips) Slugs() string {
+	str := ""
+	for index, clip := range clips.Clips {
+		if index != 0 {
+			str += " "
+		}
+		str += clip.Slug
+	}
+	return str
+}
+
 // Get gets information about Clips from Twitch
 func (clip *Clip) Get() error {
 	if clip.Slug == "" {
@@ -128,7 +140,7 @@ func (clip *Clip) Download() error {
 		}
 	}
 
-	if _, err := os.Stat(outString); !os.IsNotExist(err) {
+	if _, err := os.Stat(outString); err == nil {
 		log.Printf("%s already downloaded\n", clip.Slug)
 		return nil
 	}
@@ -137,6 +149,12 @@ func (clip *Clip) Download() error {
 	defer out.Close()
 	if err != nil {
 		log.Printf("Error creating %s: %s\n", outString, err)
+		return err
+	}
+
+	err = os.Chmod(outString, 0755)
+	if err != nil {
+		log.Printf("Error assigning permissions to file %s: %s\n", outString, err)
 		return err
 	}
 
