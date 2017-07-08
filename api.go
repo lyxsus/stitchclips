@@ -9,7 +9,6 @@ import (
 
 	"io/ioutil"
 
-	"fmt"
 	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 )
@@ -108,9 +107,9 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 	cache, err := a.Db.Get(clips.Slugs()).Result()
 	if err != nil {
 		if err == redis.Nil {
-			log.Printf("[HandleStitch] Error while retrieving cache: %s\n", err)
-		} else {
 			log.Println("[HandleStitch] Cache not found")
+		} else {
+			log.Printf("[HandleStitch] Error while retrieving cache: %s\n", err)
 		}
 	} else {
 		log.Println("[HandleStitch] Found cache.")
