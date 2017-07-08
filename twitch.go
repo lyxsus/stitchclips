@@ -62,6 +62,7 @@ type Clip struct {
 type Clips struct {
 	Clips  []Clip `json:"clips"`
 	Cursor string `json:"_cursor"`
+	ID     string
 }
 
 const urlTop = "https://api.twitch.tv/kraken/clips/top"
@@ -90,7 +91,7 @@ func (clips *Clips) GetTop(channel string, limit string, period string) error {
 	return nil
 }
 
-// Slugs returns the slugs of all clips contatenated with a space
+// Slugs returns the slugs of all clips concatenated with a space
 func (clips *Clips) Slugs() string {
 	str := ""
 	for index, clip := range clips.Clips {
@@ -100,6 +101,23 @@ func (clips *Clips) Slugs() string {
 		str += clip.Slug
 	}
 	return str
+}
+
+func (clips *Clips) DownloadAll() error {
+	clipMap := make(map[string]Clip)
+	for _, clip := range clips.Clips {
+		clipMap[clip.Slug] = clip
+	}
+	out, error := a.Dm.addClips(*clips)
+	for len(clipMap) != 0 {
+		slug := <-out
+		err := <-error
+		if err != nil {
+			return err
+		}
+		delete(clipMap, slug)
+	}
+	return nil
 }
 
 // Get gets information about Clips from Twitch
@@ -140,11 +158,6 @@ func (clip *Clip) Download() error {
 		}
 	}
 
-	if _, err := os.Stat(outString); err == nil {
-		log.Printf("%s already downloaded\n", clip.Slug)
-		return nil
-	}
-
 	out, err := os.Create(outString)
 	defer out.Close()
 	if err != nil {
@@ -162,7 +175,7 @@ func (clip *Clip) Download() error {
 	resp, err := resty.R().
 		Get(videoURL)
 	if err != nil {
-		log.Printf("Error getting video data: %s\n", err)
+		log.Println("Error getting video data: ", err)
 		return err
 	}
 

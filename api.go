@@ -88,19 +88,7 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	cache, err := a.Db.Get(clips.Slugs()).Result()
-	if err != nil {
-		if err == redis.Nil {
-			log.Printf("[HandleStitch] Error while retrieving cache: %s\n", err)
-		} else {
-			log.Println("[HandleStitch] Cache not found")
-		}
-	} else {
-		log.Println("[HandleStitch] Found cache.")
-		w.Write([]byte(cache))
-		return
-	}
+	clips.ID = GetUUID()
 
 	stitchingFile := a.Config.Path + "/" + GetUUID()
 	log.Printf("Creating stitching file: %s.\n", stitchingFile)
@@ -116,19 +104,28 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cache, err := a.Db.Get(clips.Slugs()).Result()
+	if err != nil {
+		if err == redis.Nil {
+			log.Println("[HandleStitch] Cache not found")
+		} else {
+			log.Printf("[HandleStitch] Error while retrieving cache: %s\n", err)
+		}
+	} else {
+		log.Println("[HandleStitch] Found cache.")
+		w.Write([]byte(cache))
+		return
+	}
+
+	err = clips.DownloadAll()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	done := make(chan bool, len(clips.Clips))
 	errors := make(chan error, len(clips.Clips))
 	for _, clip := range clips.Clips {
-		err := clip.Get()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		err = clip.Download()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 		err = clip.PrepareAsync(stitchingFile, done, errors)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -161,7 +158,6 @@ func HandleStitch(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("[HandleStitch] Error while saving cache: %s\n", err)
 	}
-
 	if err != nil {
 		log.Printf("Error on serializing json: %s\n", err)
 		w.WriteHeader(http.StatusInternalServerError)

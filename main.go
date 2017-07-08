@@ -15,18 +15,19 @@ type App struct {
 	Router *mux.Router
 	Config Config
 	Db     *redis.Client
+	Dm     DownloadingManager
 }
 
 var a = App{}
 
-func initialise() {
+func init() {
 	a.Config = LoadConfig()
 	a.Router = Router()
 	a.Db = CreateClient()
+	a.Dm = CreateDownloadingManager()
 }
 
 func main() {
-	initialise()
 	if _, err := os.Stat(a.Config.Path); os.IsNotExist(err) {
 		err := os.Mkdir(a.Config.Path, 0755)
 		if err != nil {
@@ -35,6 +36,8 @@ func main() {
 		}
 	}
 	log.Println("Starting server on port 8000")
+
+	go a.Dm.run()
 
 	handler := cors.Default().Handler(Router())
 	log.Fatal(http.ListenAndServe(":"+a.Config.Port, handler))

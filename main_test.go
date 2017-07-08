@@ -6,9 +6,8 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	initialise()
-
 	a.Db.FlushDB()
+	go a.Dm.run()
 
 	if a.Config.ClientID == "" {
 		a.Config.ClientID = os.Getenv("clientId")
