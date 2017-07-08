@@ -20,7 +20,7 @@
 #### Example request
 
 ```bash
-curl -X GET 'http://apidomain.com/clips/itmejp/week/2'
+curl -X GET 'http://api.stitch.sadzeih.com/clips/itmejp/week/2'
 ```
 
 #### Example response

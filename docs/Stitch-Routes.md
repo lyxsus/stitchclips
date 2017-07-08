@@ -39,7 +39,7 @@ The request body must be in JSON.
 ```bash
 curl -H 'Content-Type: application/json' \
 -d '{"clips":[{"slug":"DaintyRenownedBubbleteaFutureMan"},{"slug":"TriangularCleanSardineOMGScoots"},{"slug":"RepleteSneakyTroutBudStar"}]}' \
--X POST 'https://apidomain.com/stitch'
+-X POST 'https://api.stitch.sadzeih.com/stitch'
 ```
 
 
@@ -48,6 +48,6 @@ curl -H 'Content-Type: application/json' \
 ```json
 {
   "id": "cf4f2f50-3e3e-11e7-b8eb-1c872c71269a",
-  "url": "http://localhost:8000/video/cf4f2f50-3e3e-11e7-b8eb-1c872c71269a.mp4"
+  "url": "http://api.stitch.sadzeih/video/cf4f2f50-3e3e-11e7-b8eb-1c872c71269a.mp4"
 }
 ```
