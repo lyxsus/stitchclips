@@ -64,6 +64,6 @@ GOENV=test go test
 
 ## Known issues
 
-* Simultaneous stitching & downloading:
-	* ffmpeg only allows one concatenation at a time it seems
-	* downloading a file must be done once to avoid writing problems
+* Simultaneous downloading/encoding:
+	* ~~ffmpeg only allows one concatenation at a time it seems~~
+	* [downloading a file must be done once to avoid writing problems](https://github.com/Sadzeih/stitchclips/issues/1)
