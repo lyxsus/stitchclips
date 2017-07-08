@@ -29,12 +29,20 @@ func TestStitch(t *testing.T) {
 			t.Error(err)
 		}
 	}
-	clips.Stitch(outputFile, stitchingFile)
+	err = clips.Stitch(outputFile, stitchingFile)
+	if err != nil {
+		t.Error("Stitchin ended on error", err)
+	}
 	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
 		t.Error("Did not stitch")
 	}
 	log.Println("Starting TestStitch test 2")
-	clips.Stitch(outputFile, stitchingFile)
+	outputFile = a.Config.Path + "/stitched2"
+	stitchingFile = a.Config.Path + "/stitching2"
+	err = clips.Stitch(outputFile, stitchingFile)
+	if err != nil {
+		t.Error("Stitching ended on error", err)
+	}
 	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
 		t.Error("Did not stitch")
 	}
