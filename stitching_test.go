@@ -43,7 +43,7 @@ func TestStitch(t *testing.T) {
 	if err != nil {
 		t.Error("Stitching ended on error", err)
 	}
-	if _, err := os.Stat(a.Config.Path + "/stitched.mp4"); err != nil {
+	if _, err := os.Stat(a.Config.Path + "/stitched2.mp4"); err != nil {
 		t.Error("Did not stitch")
 	}
 }
