@@ -21,7 +21,7 @@ type App struct {
 var a = App{}
 
 func init() {
-	a.Config = LoadConfig()
+	LoadConfig()
 	a.Router = Router()
 	a.Db = CreateClient()
 	a.Dm = CreateDownloadingManager()
