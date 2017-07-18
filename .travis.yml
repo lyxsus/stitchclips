@@ -22,6 +22,8 @@ install:
   - go get github.com/satori/go.uuid
   - go get github.com/rs/cors
   - go get github.com/go-redis/redis
+  - go get github.com/go-redis/redis
+  - go get github.com/spf13/viper
 
 script: GOENV=test go test ./...
 
