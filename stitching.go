@@ -17,8 +17,7 @@ func (clip Clip) PrepareAsync(stichingFile string, done chan bool, errors chan e
 
 // Prepare encodes a MP4 into a intermediate file synchronously
 func (clip Clip) Prepare(stichingFile string) error {
-	err := clip.PrepareSync(stichingFile)
-	return err
+	return clip.PrepareSync(stichingFile)
 }
 
 // PrepareSync encodes a MP4 into a intermediate file synchronously
