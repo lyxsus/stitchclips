@@ -23,7 +23,10 @@ type StitchedVideo struct {
 func Router() *mux.Router {
 	r := mux.NewRouter()
 	r.Host(a.Config.Host)
-	r.HandleFunc("/clips/{channel}/{period}/{limit}", HandleGetClips)
+	r.HandleFunc("/clips", HandleGetClips).
+		Queries("channel", "{channel}").
+		Queries("period", "{period}").
+		Queries("limit", "{limit}")
 	r.HandleFunc("/stitch", HandleStitch).Methods("POST")
 	r.HandleFunc("/video/{id}", HandleVideo).Methods("GET")
 

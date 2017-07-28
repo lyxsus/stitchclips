@@ -20,7 +20,7 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 
 func TestHandleGetClips(t *testing.T) {
 	log.Println("Starting TestHandleGetClips test 1")
-	request, err := http.NewRequest("GET", "/clips/itmejp/all/2", nil)
+	request, err := http.NewRequest("GET", "/clips?channel=itmejp&period=all&limit=2", nil)
 	if err != nil {
 		t.Error("Error on request", err)
 	}
