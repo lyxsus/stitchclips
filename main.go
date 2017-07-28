@@ -35,7 +35,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
-	log.Println("Starting server on port 8000")
+	log.Println("Starting server on port", a.Config.Port)
 
 	go a.Dm.run()
 
