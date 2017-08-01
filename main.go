@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -14,7 +13,6 @@ import (
 type App struct {
 	Router *mux.Router
 	Config Config
-	Db     *redis.Client
 	Dm     DownloadingManager
 }
 
@@ -23,7 +21,6 @@ var a = App{}
 func init() {
 	LoadConfig()
 	a.Router = Router()
-	a.Db = CreateClient()
 	a.Dm = CreateDownloadingManager()
 }
 
