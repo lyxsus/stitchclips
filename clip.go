@@ -1,56 +1,58 @@
 package main
 
 import (
-	"log"
-	"gopkg.in/resty.v0"
-	"encoding/json"
-	"strings"
-	"os"
 	"bytes"
+	"encoding/json"
+	"gopkg.in/resty.v0"
 	"io"
+	"log"
+	"os"
+	"strings"
 	"time"
+	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2"
 )
 
 // Broadcaster represents a twitch user
 type Broadcaster struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	DisplayName string `json:"display_name"`
-	ChannelURL  string `json:"channel_url"`
-	Logo        string `json:"logo"`
+	ID          string `bson:"id" json:"id"`
+	Name        string `bson:"name" json:"name"`
+	DisplayName string `bson:"display_name" json:"display_name"`
+	ChannelURL  string `bson:"channel_url" json:"channel_url"`
+	Logo        string `bson:"logo" json:"logo"`
 }
 
 // Thumbnails represents clips thumbnails
 type Thumbnails struct {
-	Medium string `json:"medium"`
-	Small  string `json:"small"`
-	Tiny   string `json:"tiny"`
+	Medium string `bson:"medium" json:"medium"`
+	Small  string `bson:"small" json:"small"`
+	Tiny   string `bson:"tiny" json:"tiny"`
 }
 
 // Clip represents a clip (short video) on twitch
 type Clip struct {
-	Slug        string      `json:"slug"`
-	TrackingID  string      `json:"tracking_id"`
-	URL         string      `json:"url"`
-	EmbedURL    string      `json:"embed_url"`
-	EmbedHTML   string      `json:"embed_html"`
-	Broadcaster Broadcaster `json:"broadcaster"`
-	Curator     Broadcaster `json:"curator"`
+	Slug        string      `bson:"slug" json:"slug"`
+	TrackingID  string      `bson:"tracking_id" json:"tracking_id"`
+	URL         string      `bson:"url" json:"url"`
+	EmbedURL    string      `bson:"embed_url" json:"embed_url"`
+	EmbedHTML   string      `bson:"embed_html" json:"embed_html"`
+	Broadcaster Broadcaster `bson:"broadcaster" json:"broadcaster"`
+	Curator     Broadcaster `bson:"curator" json:"curator"`
 	Vod         struct {
-		ID  string `json:"id"`
-		URL string `json:"url"`
-	} `json:"vod"`
-	Game       string     `json:"game"`
-	Language   string     `json:"language"`
-	Title      string     `json:"title"`
-	Views      int        `json:"views"`
-	Duration   float64    `json:"duration"`
-	CreatedAt  time.Time  `json:"created_at"`
-	Thumbnails Thumbnails `json:"thumbnails"`
+		ID  string `bson:"id" json:"id"`
+		URL string `bson:"url" json:"url"`
+	} `bson:"vod" json:"vod"`
+	Game       string     `bson:"game" json:"game"`
+	Language   string     `bson:"language" json:"language"`
+	Title      string     `bson:"title" json:"title"`
+	Views      int        `bson:"views" json:"views"`
+	Duration   float64    `bson:"duration" json:"duration"`
+	CreatedAt  time.Time  `bson:"created_at" json:"created_at"`
+	Thumbnails Thumbnails `bson:"thumbnails" json:"thumbnails"`
 }
 
-// Get gets information about Clips from Twitch
-func (clip *Clip) Get() error {
+// GetFromTwitch gets information about Clips from Twitch
+func (clip *Clip) GetFromTwitch() error {
 	if clip.Slug == "" {
 		err := TwitchError("Clip should have a slug")
 		log.Printf("Error on Get clip: %s\n", err)
@@ -70,6 +72,43 @@ func (clip *Clip) Get() error {
 		log.Printf("Error unserializing json: %s\n", err)
 		return err
 	}
+
+	a.Db.C("clips").Insert(clip)
+
+	index := mgo.Index{
+		Key: []string{"slug"},
+		Unique: true,
+		DropDups: true,
+		Background: false,
+		Sparse: true,
+	}
+	err = a.Db.C("clips").EnsureIndex(index)
+	if err != nil {
+		log.Println("Could not ensure index Slug existed", err)
+	}
+
+	return nil
+}
+
+func (clip *Clip) Get() error {
+	if clip.Slug == "" {
+		err := TwitchError("Clip should have a slug")
+		log.Printf("Error on Get clip: %s\n", err)
+		return err
+	}
+
+	searchedClip := []Clip{}
+	err := a.Db.C("clips").Find(bson.M{"slug": clip.Slug}).Limit(1).All(&searchedClip)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if len(searchedClip) == 0 {
+		return clip.GetFromTwitch()
+	}
+	clip = &searchedClip[0]
+
 	return nil
 }
 
