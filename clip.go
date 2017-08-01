@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"io"
 	"time"
-	"github.com/go-redis/redis"
 )
 
 // Broadcaster represents a twitch user

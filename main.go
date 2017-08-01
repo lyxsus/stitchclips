@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )

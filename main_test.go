@@ -6,7 +6,6 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	a.Db.FlushDB()
 	go a.Dm.run()
 
 	if a.Config.ClientID == "" {
