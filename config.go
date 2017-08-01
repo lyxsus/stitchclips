@@ -1,18 +1,10 @@
 package main
 
 import (
+	"github.com/spf13/viper"
 	"log"
 	"os"
-	"github.com/spf13/viper"
 )
-
-// RedisConfig contains needed configuration to connect to the Redis DB
-type RedisConfig struct {
-	Host     string
-	Port     string
-	Password string
-	Db       int
-}
 
 // Config represents stitchclips configuration
 type Config struct {
@@ -20,7 +12,8 @@ type Config struct {
 	Host     string
 	Port     string
 	Path     string
-	Redis    RedisConfig
+	DBURL    string
+	DBName   string
 }
 
 // LoadConfig loads config from file
@@ -31,10 +24,9 @@ func LoadConfig() {
 	viper.SetDefault("host", "localhost")
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("path", "clips")
-	viper.SetDefault("redis.host", "localhost")
-	viper.SetDefault("redis.port", "6379")
-	viper.SetDefault("redis.password", "")
-	viper.SetDefault("redis.db", 0)
+	viper.SetDefault("mongodb_url", "mongodb://localhost:27017")
+	viper.SetDefault("db", "stitchclips")
+
 	env := os.Getenv("GOENV")
 	if env == "" {
 		env = "dev"
@@ -55,8 +47,6 @@ func LoadConfig() {
 	a.Config.Host = viper.GetString("host")
 	a.Config.Port = viper.GetString("port")
 	a.Config.Path = viper.GetString("path")
-	a.Config.Redis.Host = viper.GetString("redis.host")
-	a.Config.Redis.Port = viper.GetString("redis.port")
-	a.Config.Redis.Password = viper.GetString("redis.password")
-	a.Config.Redis.Db = viper.GetInt("redis.db")
+	a.Config.DBURL = viper.GetString("mongodb_url")
+	a.Config.DBName = viper.GetString("db")
 }

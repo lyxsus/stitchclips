@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"gopkg.in/mgo.v2"
 )
 
 // App is the server App structure. It contains the router and the configuration
@@ -14,6 +15,7 @@ type App struct {
 	Router *mux.Router
 	Config Config
 	Dm     DownloadingManager
+	Db     *mgo.Database
 }
 
 var a = App{}
@@ -22,6 +24,7 @@ func init() {
 	LoadConfig()
 	a.Router = Router()
 	a.Dm = CreateDownloadingManager()
+	a.Db = CreateSession(a.Config.DBURL, a.Config.DBName)
 }
 
 func main() {
