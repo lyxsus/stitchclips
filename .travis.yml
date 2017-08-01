@@ -5,6 +5,9 @@ sudo: required
 go:
 - 1.8
 
+services:
+  - mongodb
+
 addons:
   ssh_known_hosts: sadzeih.com
   
@@ -19,6 +22,7 @@ install:
   - go get github.com/satori/go.uuid
   - go get github.com/rs/cors
   - go get github.com/spf13/viper
+  - go get gopkg.in/mgo.v2
 
 script: GOENV=test go test ./...
 
