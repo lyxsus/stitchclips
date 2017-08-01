@@ -2,5 +2,7 @@
 	"clientId": "",
 	"host": "http://localhost",
 	"port": "8000",
-	"path": "clips_test"
+	"path": "clips_test",
+	"mongodb_url": "mongodb://localhost:27017",
+	"db": "stitchclips"
 }

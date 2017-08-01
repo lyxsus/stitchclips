@@ -2,5 +2,7 @@
 	"clientId": "TWITCH CLIENT ID",
 	"host": "http://localhost",
 	"port": "8000",
-	"path": "clips"
+	"path": "clips",
+	"mongodb_url": "mongodb://user:password@localhost:27017",
+	"db": "stitchclips"
 }
