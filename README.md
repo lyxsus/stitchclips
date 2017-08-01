@@ -20,7 +20,6 @@ go get gopkg.in/resty.v0
 go get github.com/gorilla/mux
 go get github.com/satori/go.uuid
 go get github.com/rs/cors
-go get github.com/go-redis/redis
 go get github.com/spf13/viper
 go build
 ```
