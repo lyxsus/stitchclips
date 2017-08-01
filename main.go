@@ -14,7 +14,6 @@ import (
 type App struct {
 	Router *mux.Router
 	Config Config
-	Db     *redis.Client
 	Dm     DownloadingManager
 }
 
@@ -23,7 +22,6 @@ var a = App{}
 func init() {
 	LoadConfig()
 	a.Router = Router()
-	a.Db = CreateClient()
 	a.Dm = CreateDownloadingManager()
 }
 

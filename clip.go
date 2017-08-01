@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"io"
 	"time"
+	"github.com/go-redis/redis"
 )
 
 // Broadcaster represents a twitch user
@@ -56,6 +57,7 @@ func (clip *Clip) Get() error {
 		log.Printf("Error on Get clip: %s\n", err)
 		return err
 	}
+
 	log.Printf("Getting information about %s from Twitch", clip.Slug)
 	resp, err := resty.R().
 		SetHeader("Client-ID", a.Config.ClientID).
