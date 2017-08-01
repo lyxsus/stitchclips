@@ -2,11 +2,5 @@
 	"clientId": "TWITCH CLIENT ID",
 	"host": "http://localhost",
 	"port": "8000",
-	"path": "clips",
-	"redis": {
-		"host": "localhost",
-		"port": "6379",
-		"db": 0,
-		"password": ""
-	}
+	"path": "clips"
 }
