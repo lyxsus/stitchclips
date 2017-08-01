@@ -2,9 +2,6 @@ language: go
 dist: trusty
 sudo: required
 
-services:
-  - redis-server
-
 go:
 - 1.8
 
@@ -21,7 +18,6 @@ install:
   - go get github.com/gorilla/mux
   - go get github.com/satori/go.uuid
   - go get github.com/rs/cors
-  - go get github.com/go-redis/redis
   - go get github.com/spf13/viper
 
 script: GOENV=test go test ./...
