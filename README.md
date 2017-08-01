@@ -36,13 +36,7 @@ Then you need to create a config file that suits your needs, like so:
 	"clientId": "TWITCH CLIENT ID",
 	"host": "http://localhost",
 	"port": "8000",
-	"path": "clips_test",
-	"redis": {
-		"host": "localhost",
-		"port": "6379",
-		"passsword": "",
-		"db": 0
-	}
+	"path": "clips_test"
 }
 ```
 *Note: you need to have one config file per environment. If you want a config file for production then name it `production`*
