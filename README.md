@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d03cd0dedcb14f0f928a09bdf72fd219)](https://www.codacy.com/app/Stitchclips/stitchclips?utm_source=github.com&utm_medium=referral&utm_content=Sadzeih/stitchclips&utm_campaign=badger)
 # stitchclips [![Build Status](https://travis-ci.org/Sadzeih/stitchclips.svg?branch=master)](https://travis-ci.org/Sadzeih/stitchclips)
 
 This API stiches your clips from Twitch into one video automatically.
